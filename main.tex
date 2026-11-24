@@ -606,8 +606,14 @@ Any file that has been installed manually, created by an attacker, or your own p
 Answer.
 
 \labquestion{Compare the file access/modification times of the scp and rsync backups. Are they the same/similar? If not, why?}
-Answer.
+The files copied with Rsync keep the same modification times because of the -a flag which includes -t with it keeping the 
+original modify and access times of the files, compared to scp which without the -p flag changes the modification and access times 
+to when the files were copied. 
 
+% =====================================================================
+%  LAB 4
+% =====================================================================
+\clearpage
 % =====================================================================
 %  LAB 4
 % =====================================================================
@@ -617,11 +623,12 @@ Answer.
 \subsection{Overview and Theory}
 \ldots
 
-\subsection{Flag 1: Title}
+%---------------------------------------------------------------
+\subsection{Flag 1: Spotting a String in Network Traffic}
 
 \subsubsection{Evidence}
-\screenshot{lab4_flag1_commands.png}{Commands run and their output.}
-\screenshot{lab4_flag1_flag.png}{Flag provided by Hackerbot.}
+\screenshot[fig:lab4-a1-cmds]{lab4/commands1.png}{Commands run and their output.}
+\screenshot[fig:lab4-a1-flag]{lab4/flag1.png}{Flag provided by Hackerbot.}
 \flagvalue{FLAG{replace_me}}
 
 \subsubsection{Technical Steps}
@@ -630,8 +637,83 @@ Answer.
 \subsubsection{Challenge-Specific Theory}
 \ldots
 
+%---------------------------------------------------------------
+\subsection{Flag 2: Detecting a Port Scan}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab4-a2-cmds]{lab4/commands2.png}{Commands run and their output.}
+\screenshot[fig:lab4-a2-flag]{lab4/flag2.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 3: Scan or Attack? Detection with Snort and Wireshark}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab4-a3-cmds]{lab4/commands3.png}{Commands run and their output.}
+\screenshot[fig:lab4-a3-flag]{lab4/flag3.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 4: Identifying the Exploited Software}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab4-a4-cmds]{lab4/commands4.png}{Commands run and their output.}
+\screenshot[fig:lab4-a4-flag]{lab4/flag4.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 5: Identifying the Kind of Scan}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab4-a5-cmds]{lab4/commands5.png}{Commands run and their output.}
+\screenshot[fig:lab4-a5-flag]{lab4/flag5.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 6: Finding a Flag Over the Wire}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab4-a6-cmds]{lab4/commands6.png}{Commands run and their output.}
+\screenshot[fig:lab4-a6-flag]{lab4/flag6.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
 \subsection{Log Book Questions}
-\labquestion{Question text.}
+
+\labquestion{Explain the differences in the TCP and HTTP stream view for the same web traffic.}
+Answer.
+
+\labquestion{What does the -sX in the nmap command mean? Does the log match what happened? Are there any false positives (alerts that describe things that did not actually happen)?}
 Answer.
 
 % =====================================================================
