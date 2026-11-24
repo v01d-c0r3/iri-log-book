@@ -450,7 +450,9 @@ The files report as changed, because the hashes are hard-coded into the script a
 \labquestion{What are the limitations of this approach? What files will (and won't) this approach to integrity management cover? Are the hashes protected against tampering?}
 
 Any file that has been installed manually, created by an attacker, or your own personal files as debsums has no hashes to compare them to limiting the usefulness of it. If the attacker has root access then they can update the file storing the hashes after uploading malware to make sure that the malicious file passes the check. 
-
+% =====================================================================
+%  LAB 3
+% =====================================================================
 % =====================================================================
 %  LAB 3
 % =====================================================================
@@ -489,11 +491,12 @@ Any file that has been installed manually, created by an attacker, or your own p
 \ldots
 
 %---------------------------------------------------------------
-\subsection{Flag 3: Second User Changes Their Files (Preparation)}
+% Attack 3: second user changes their files (flag hidden in the changes)
+\subsection{Flag 3: Second User Changes Their Files}
 
 \subsubsection{Evidence}
 \screenshot[fig:lab3-a3-cmds]{lab3/commands3.png}{Commands run and their output.}
-\screenshot[fig:lab3-a3-flag]{labclearcd 3/flag3.png}{Flag provided by Hackerbot.}
+\screenshot[fig:lab3-a3-flag]{lab3/flag3.png}{Flag found in the second user's changed files.}
 \flagvalue{flag{cc25c5f0}}
 
 \subsubsection{Technical Steps}
@@ -503,6 +506,7 @@ Any file that has been installed manually, created by an attacker, or your own p
 \ldots
 
 %---------------------------------------------------------------
+% Attack 4: differential backup
 \subsection{Flag 4: Differential Backup 1}
 
 \subsubsection{Evidence}
@@ -517,11 +521,13 @@ Any file that has been installed manually, created by an attacker, or your own p
 \ldots
 
 %---------------------------------------------------------------
-\subsection{Flag 5: Second User Makes More Changes}
+% Attack 5 (second user's changes, no flag) + Attack 6 (backup)
+\subsection{Flag 6: Differential Backup 2}
 
 \subsubsection{Evidence}
-\screenshot[fig:lab3-a5-cmds]{lab3/commands5.png}{Commands run and their output.}
-\screenshot[fig:lab3-a5-flag]{lab3/flag5.png}{Flag provided by Hackerbot.}
+% Attack 6: second differential backup
+\screenshot[fig:lab3-a6-cmds]{lab3/commands6.png}{Commands run and their output.}
+\screenshot[fig:lab3-a6-flag]{lab3/flag6.png}{Flag provided by Hackerbot.}
 \flagvalue{flag{deadbolt roosting}}
 
 \subsubsection{Technical Steps}
@@ -531,11 +537,13 @@ Any file that has been installed manually, created by an attacker, or your own p
 \ldots
 
 %---------------------------------------------------------------
-\subsection{Flag 6: Differential Backup 2}
+% Attack 7 (second user's changes, no flag) + Attack 8 (backup)
+\subsection{Flag 8: Incremental Backup 1}
 
 \subsubsection{Evidence}
-\screenshot[fig:lab3-a6-cmds]{lab3/commands6.png}{Commands run and their output.}
-\screenshot[fig:lab3-a6-flag]{lab3/flag6.png}{Flag provided by Hackerbot.}
+% Attack 8: incremental backup
+\screenshot[fig:lab3-a8-cmds]{lab3/commands8.png}{Commands run and their output.}
+\screenshot[fig:lab3-a8-flag]{lab3/flag8.png}{Flag provided by Hackerbot.}
 \flagvalue{flag{118128bd}}
 
 \subsubsection{Technical Steps}
@@ -545,54 +553,16 @@ Any file that has been installed manually, created by an attacker, or your own p
 \ldots
 
 %---------------------------------------------------------------
-\subsection{Flag 7: Second User Makes Even More Changes}
-
-\subsubsection{Evidence}
-\screenshot[fig:lab3-a7-cmds]{lab3/commands7.png}{Commands run and their output.}
-\screenshot[fig:lab3-a7-flag]{lab3/flag7.png}{Flag provided by Hackerbot.}
-\flagvalue{flag{ea999b2ed26191d87d591a643d54a56a}}
-
-\subsubsection{Technical Steps}
-\ldots
-
-\subsubsection{Challenge-Specific Theory}
-\ldots
-
-%---------------------------------------------------------------
-\subsection{Flag 8: Incremental Backup 1}
-
-\subsubsection{Evidence}
-\screenshot[fig:lab3-a8-cmds]{lab3/commands8.png}{Commands run and their output.}
-\screenshot[fig:lab3-a8-flag]{lab3/flag8.png}{Flag provided by Hackerbot.}
-\flagvalue{FLAG{replace_me}}
-
-\subsubsection{Technical Steps}
-\ldots
-
-\subsubsection{Challenge-Specific Theory}
-\ldots
-
-%---------------------------------------------------------------
-\subsection{Flag 9: Second User Makes One More Set of Changes}
-
-\subsubsection{Evidence}
-\screenshot[fig:lab3-a9-cmds]{lab3/commands9.png}{Commands run and their output.}
-\screenshot[fig:lab3-a9-flag]{lab3/flag9.png}{Flag provided by Hackerbot.}
-\flagvalue{FLAG{replace_me}}
-
-\subsubsection{Technical Steps}
-\ldots
-
-\subsubsection{Challenge-Specific Theory}
-\ldots
-
-%---------------------------------------------------------------
+% Attack 9 (second user's changes, no flag) + Attack 10 (backup and quiz)
 \subsection{Flag 10: Incremental Backup 2 and Backup Quiz}
 
 \subsubsection{Evidence}
+% Attack 10: second incremental backup, then quiz (two flags)
 \screenshot[fig:lab3-a10-cmds]{lab3/commands10.png}{Commands run and their output.}
-\screenshot[fig:lab3-a10-flag]{lab3/flag10.png}{Flag provided by Hackerbot.}
-\flagvalue{FLAG{replace_me}}
+\screenshot[fig:lab3-a10-cmds2]{lab3/commands10.1.png}{Commands run and their output.}
+\screenshot[fig:lab3-a10-flag]{lab3/flag10.png}{Flags provided by Hackerbot.}
+\flagvalue{flag{ea999b2ed26191d87d591a643d54a56a}}
+\flagvalue{flag{jacinth anthranilate}}
 
 \subsubsection{Technical Steps}
 \ldots
@@ -601,26 +571,13 @@ Any file that has been installed manually, created by an attacker, or your own p
 \ldots
 
 %---------------------------------------------------------------
-\subsection{Flag 11: Backup Verification and Attack}
+% Attack 11 (backup check and wipe, no flag) + Attack 12 (restore)
+\subsection{Flag 12: Backup Verification, Attack and Restore}
 
-\subsubsection{Evidence}
-\screenshot[fig:lab3-a11-cmds]{lab3/commands11.png}{Commands run and their output.}
-\screenshot[fig:lab3-a11-flag]{lab3/flag11.png}{Flag provided by Hackerbot.}
-\flagvalue{FLAG{replace_me}}
-
-\subsubsection{Technical Steps}
-\ldots
-
-\subsubsection{Challenge-Specific Theory}
-\ldots
-
-%---------------------------------------------------------------
-\subsection{Flag 12: Restoring the Second User's Files from Backups}
-
-\subsubsection{Evidence}
+% Attack 12: restore from backups
 \screenshot[fig:lab3-a12-cmds]{lab3/commands12.png}{Commands run and their output.}
 \screenshot[fig:lab3-a12-flag]{lab3/flag12.png}{Flag provided by Hackerbot.}
-\flagvalue{FLAG{replace_me}}
+\flagvalue{flag{e72164df78031a209a6d9a7bc6e4fe9a}}
 
 \subsubsection{Technical Steps}
 \ldots
@@ -634,7 +591,7 @@ Any file that has been installed manually, created by an attacker, or your own p
 \subsubsection{Evidence}
 \screenshot[fig:lab3-a13-cmds]{lab3/commands13.png}{Commands run and their output.}
 \screenshot[fig:lab3-a13-flag]{lab3/flag13.png}{Flag provided by Hackerbot.}
-\flagvalue{FLAG{replace_me}}
+\flagvalue{flag{cymagraphs problematically}}
 
 \subsubsection{Technical Steps}
 \ldots
