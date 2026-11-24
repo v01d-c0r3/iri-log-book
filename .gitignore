@@ -1,0 +1,22 @@
+# LaTeX build artefacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.run.xml
+*.synctex.gz
+*.synctex(busy)
+build/
+# Keep the compiled PDF out of git (CI publishes it as an artefact / release)
+main.pdf
+# Editor / OS
+.DS_Store
+.vscode/
+*.swp

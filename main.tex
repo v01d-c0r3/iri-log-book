@@ -1,0 +1,859 @@
+% =====================================================================
+%  Incident Response and Investigation -- Log Book Template
+%  Compile with pdfLaTeX (Overleaf default). Screenshots go in ./screenshots/
+%  Placeholders compile fine even if the image files don't exist yet.
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[british]{babel}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage[hidelinks]{hyperref}
+\usepackage{csquotes} % avoids biblatex warnings with babel
+\usepackage[
+  backend=biber,
+  style=authoryear,
+  sorting=nyt,
+  giveninits=true,
+  maxcitenames=2,
+  mincitenames=1,
+  maxbibnames=99,
+  uniquelist=false,
+  uniquename=false,
+  dashed=false,
+  useprefix=false
+]{biblatex}
+
+\addbibresource{references/references.bib}
+
+% ---- Approximate Leeds Beckett (Cite Them Right) Harvard ----
+% All authors inverted, with initials: Garfinkel, S., Spafford, G. and Schwartz, A.
+\DeclareNameAlias{author}{family-given}
+% In-text: (Author, Year) rather than (Author Year)
+\renewcommand*{\nameyeardelim}{\addcomma\space}
+% Reference list: Author (Year) Title.
+\renewcommand*{\labelnamepunct}{\addspace}
+\renewbibmacro*{date+extradate}{%
+  \printtext[parens]{\printfield{labelyear}\printfield{extradate}}}
+% 3rd edn.
+\DefineBibliographyStrings{british}{edition = {edn\adddot}}
+
+\graphicspath{{screenshots/}}
+
+\setstretch{1.15}
+
+% ---- Heading structure (maps to Word's Heading 1 / 2 / 3) ----
+%  \section       = Lab title            (Heading 1, in contents)
+%  \subsection    = Overview, each flag, Log Book Questions (Heading 2, in contents)
+%  \subsubsection = Evidence / Technical Steps / Challenge-Specific Theory (Heading 3)
+\setcounter{secnumdepth}{0}   % no numbering: lab titles already say "Lab N"
+\setcounter{tocdepth}{2}
+\titleformat{\section}{\Large\bfseries}{}{0pt}{}
+\titleformat{\subsection}{\large\bfseries}{}{0pt}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\itshape}{}{0pt}{}
+\titlespacing*{\section}{0pt}{0pt}{1em}
+\titlespacing*{\subsection}{0pt}{1.4em}{0.6em}
+\titlespacing*{\subsubsection}{0pt}{1em}{0.4em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+\captionsetup{font=small,labelfont=bf}
+
+% ---------------------------------------------------------------------
+%  YOUR DETAILS  (edit these)
+% ---------------------------------------------------------------------
+\newcommand{\StudentName}{Harrison Hargreaves}
+\newcommand{\StudentID}{c3709327}          % C number
+\newcommand{\HackerbotUser}{lavellan}      % shown in screenshots
+\newcommand{\ModuleName}{Incident Response and Investigation}
+\newcommand{\DocTitle}{Log Book}
+\newcommand{\AcademicYear}{2026/27}
+
+% ---------------------------------------------------------------------
+%  Command-line / code styling
+%  Put every command in its own block:
+%    \begin{lstlisting}
+%    sudo chmod o-w /tmp/d6d2
+%    \end{lstlisting}
+% ---------------------------------------------------------------------
+\definecolor{codebg}{gray}{0.95}
+\lstdefinestyle{term}{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  breakatwhitespace=false,
+  columns=fullflexible,
+  frame=single,
+  rulecolor=\color{black!25},
+  showstringspaces=false,
+  keepspaces=true,
+  upquote=true,
+  aboveskip=0.4em,
+  belowskip=0.4em
+}
+\lstset{style=term}
+% Inline file paths / short names (not commands): \cmd{/tmp/d6d2}
+\newcommand{\cmd}[1]{\texttt{\detokenize{#1}}}
+
+% ---------------------------------------------------------------------
+%  Screenshot helper
+%  \screenshot{filename}{caption}
+%  \screenshot[fig:label]{filename}{caption}   -> then Figure~\ref{fig:label}
+%  Shows a grey placeholder box if the file doesn't exist yet.
+%  Remember: EVERY screenshot must show your random username (or your
+%  first name + student ID).
+% ---------------------------------------------------------------------
+\newcommand{\screenshot}[3][]{%
+  \begin{figure}[H]
+    \centering
+    \IfFileExists{screenshots/#2}{%
+      \includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{#2}%
+    }{%
+      \fbox{\parbox{0.9\linewidth}{\centering\vspace{2.5em}\textcolor{gray}{[Screenshot placeholder: \detokenize{#2}]}\vspace{2.5em}}}%
+    }
+    \caption{#3}
+    \if\relax\detokenize{#1}\relax\else\label{#1}\fi
+  \end{figure}%
+}
+
+% ---------------------------------------------------------------------
+%  Question helper. Headings use plain \section / \subsection (not macros)
+%  so Overleaf's file outline can see them.
+%  \labquestion{Q text}   -> highlighted question box
+% ---------------------------------------------------------------------
+\newcommand{\labquestion}[1]{%
+  \par\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\textbf{Log Book Question:} #1}}\par\medskip
+}
+% Flag value box:  \flagvalue{FLAG{...}}
+\newcommand{\flagvalue}[1]{\par\noindent\textbf{Flag:} \texttt{\detokenize{#1}}\par}
+
+% =====================================================================
+\begin{document}
+
+% ---------------------------- COVER PAGE -----------------------------
+\begin{titlepage}
+  \centering
+  \vspace*{3cm}
+  {\Large\scshape Module\par}
+  \vspace{0.4cm}
+  {\Huge\bfseries \ModuleName\par}
+  \vspace{1.2cm}
+  {\LARGE \DocTitle\par}
+  \vspace{0.4cm}
+  {\large Academic Year \AcademicYear\par}
+  \vfill
+  {\Large \textbf{Name:} \StudentName\par}
+  \vspace{0.4cm}
+  {\Large \textbf{C Number:} \StudentID\par}
+  \vspace{3cm}
+\end{titlepage}
+
+% ------------------------------ CONTENTS -----------------------------
+\tableofcontents
+\clearpage
+
+% =====================================================================
+%  LAB 1
+% =====================================================================
+\clearpage
+\section{Lab 1: File Integrity Management (FIM): Protection}
+
+\subsection{Overview and Theory}
+The Integrity Management: Protecting Against Change lab is about protecting the files on a system or within an organisation from unauthorised change. The CIA Triad is widely used to demonstrate this and is reffered to a lot in information security, with the lab focusing on the integrity principle \parencite{garfinkel_practical_2003}.
+\screenshot[fig:cia-triad]{lab1/CIA-Triad.png}{CIA Triad}
+Figure \ref{fig:cia-triad} provides a visual example of the three principles ofthe CIA triad 
+
+\subsection{Hackerbot Attack \#1: File Permissions}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab1-a1-cmds]{lab1/commands1.png}{Commands run and their output.}
+\screenshot[fig:lab1-a1-flag]{lab1/flag1.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{41de9ce88876e1c2f5d778e6bb85a64b}}
+
+\subsubsection{Technical Steps}
+Hackerbot gave the instruction that the user rougarou was trying to write to the file \cmd{/tmp/d6d2}. Firstly, I ran the following command, which creates the file on the system that the attacker is trying to edit:
+\begin{lstlisting}
+nano /tmp/d6d2
+\end{lstlisting}
+After creating the file, I then ran the following command, which removes write permissions from the file:
+\begin{lstlisting}
+sudo chmod -w /tmp/d6d2 -v
+\end{lstlisting}
+As seen in Figure~\ref{fig:lab1-a1-cmds}, the command changes the permissions of the file from 0644, which has read and write permissions, to 0444, which only has read permissions for the file. One issue with using this command is that it also removes write permissions from the owner, which isn't ideal, so as an alternative the following command would be better:
+\begin{lstlisting}
+sudo chmod o-w /tmp/d6d2
+\end{lstlisting}
+This removes write permissions from everyone but the owner.
+\subsubsection{Challenge-Specific Theory}
+This challenge involves using the chmod (change mode) command to edit the file permissions to restrict user write access using the -w option \parencite{chmod_man}. 
+
+The way the Linux file system model works is that the first letter is for the file type, then the next block of three is the owners permissions, then the next block of three is the groups permissions, then the final block of three is the permissions of others which are things that don't fall in owners or groups. For example:
+\begin{lstlisting}
+    -rw-r--r-- 1 root root 2 Oct  8 12:12 /tmp/d6d2
+\end{lstlisting}
+This command shows that  the owner has read and write permissions, but the groups and other only have read permissions.
+\subsection{Hackerbot Attack \#2: File Attributes (Immutable)}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab1-a2-cmds]{lab1/commands2.png}{Commands run and their output.}
+\screenshot[fig:lab1-a2-flag]{lab1/flag2.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{undelight searobin}}
+
+\subsubsection{Technical Steps}
+Hackerbot asked the user lavellan to stop an attempt to delete the file \cmd{/home/lavellan/logs/log1} by editing the file attributes. The following command was used:
+\begin{lstlisting}
+    sudo chattr +i -v /home/lavellan/logs/log1
+\end{lstlisting}
+As seen in Figure~\ref{fig:lab1-a2-cmds} the verbose output shows the command adds the immutable attribute to the file removing permissions from everyone including root to be able to edit the file in any way. This can be reversed by root user by using the -i flag instead to remove the immutable attribute allowing the file to be edited again. 
+
+\subsubsection{Challenge-Specific Theory}
+This challenge involves using the chattr (change attribute) command to prevent an attack to delete a file on the system \parencite{chattr_man}. Unlike for the last flag where the chmod command worked off changing the overall permissions of a file for read, write and execute, the way chattr works is by adding low level flags to the file which alter how the system interacts with them at a kernel level which prevents even the root user from making changes unless they physically remove the attribute from the file. 
+\subsection{Hackerbot Attack \#3: File Attributes (Append-Only)}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab1-a3-cmds]{lab1/commands3.png}{Commands run and their output.}
+\screenshot[fig:lab1-a3-flag]{lab1/flag3.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{wCteyUVVdAOBCQCQYRmAA}}
+
+\subsubsection{Technical Steps}
+Hacker bot asked the user to stop an attempt to overwrite \cmd{/home/lavellan/logs/log1}.
+Firstly to reset the file from how it was set in flag 2 the command:
+\begin{lstlisting}
+    sudo chattr -i /home/lavellan/logs/log1
+\end{lstlisting}
+was run to remove the immutable flag from the file. After this the command:
+\begin{lstlisting}
+    sudo chattr +a -V /home/lavellan/logs/log1
+\end{lstlisting}
+is used to add the append only attribute to the file which can be seen in Figure~\ref{fig:lab1-a3-cmds} with the verbose output.
+\subsubsection{Challenge-Specific Theory}
+Similar to flag 2, sticking with the chattr command, rather than making the file immutable which allows no edits at all, making a file append only may be useful in some cases. For example in the scenario it asks us to make a log file append only, this is useful in this situation because the append flag makes it so only information can be added to the end of a file and nothing before can be changed. 
+
+\subsection{Hackerbot Attack \#4: Read-Only Bind Mount}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab1-a4-cmds]{lab1/commands4.png}{Commands run and their output.}
+\screenshot[fig:lab1-a4-flag]{lab1/flag4.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{hollandiatarheelgeochronometricstillerslunated}}
+
+\subsubsection{Technical Steps}
+For this challenge hackerbot asked to prevent an edit to a file in /etc/ by mounting the directory as read-only. Firstly need to start with the command:
+\begin{lstlisting}
+    sudo mount -o bind /etc /etc -V
+\end{lstlisting}
+This mounts the etc directory to itself so normal users can no longer edit the directory but root users are still able to make edits. The next step is to remount the directory as read-only so no one can edit the file at all. To do this the following command was used:
+\begin{lstlisting}
+    sudo mount -o remount,ro,bind /etc /etc -V
+\end{lstlisting}
+This remounts the file as read only and binds the etc file to itself so no one can change the file and the only way to make changes is for the superuser to unmount etc from itself to allow editing files again. 
+\subsubsection{Challenge-Specific Theory}
+This challenge involves using the mount command to bind \cmd{/etc} to itself to make the file read-only to prevent edits to the file from even superusers without having to unbind it first \parencite{mount_man}.  
+
+\subsection{Hackerbot Attack \#5: Preventing Shell Access}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab1-a5-cmds]{lab1/commands5.png}{Commands run and their output.}
+\screenshot[fig:lab1-a5-flag]{lab1/flag5.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{ronnelsamazedaberrantexpressesgetgo}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+% =====================================================================
+%  LAB 2
+% =====================================================================
+\clearpage
+
+\section{Lab 2: File Integrity Management (FIM): Detection}
+
+\subsection{Overview and Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 1: Detecting a New User (Backup Comparison)}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab2-a1-cmds]{lab2/commands1.png}{Commands run and their output.}
+\screenshot[fig:lab2-a1-flag]{lab2/flag1.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{f5d282a3c85af8d4d43e7a8a4ff80516}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 2: Detecting a Config File Change (Backup of /etc/)}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab2-a2-cmds]{lab2/commands2.png}{Commands run and their output.}
+\flagvalue{flag{c0tLjFZuGDRj688tLPFBg}}
+\screenshot[fig:lab2-a2-flag]{lab2/flag2.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{monologging gabions}}
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 3: Detecting Tampering with the Backups}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab2-a3-cmds]{lab2/commands3.png}{Commands run and their output.}
+\flagvalue{flag{18sWqpnwhNW3rzNi8DA}}
+\screenshot[fig:lab2-a3-flag]{lab2/flag3.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{df205a6e}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 4: SHA1 Hash of a New File}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab2-a4-cmds]{lab2/commands4.png}{Commands run and their output.}
+\screenshot[fig:lab2-a4-flag]{lab2/flag4.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{85d6b65a}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 5: Detecting a Modified File in /etc/ (Hash Comparison)}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab2-a5-cmds]{lab2/commands5.png}{Commands run and their output.}
+\screenshot[fig:lab2-a5-flag]{lab2/flag5.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{fb3164153f5663b2effcc56a935a78c9}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 6: Detecting a New File in /etc/}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab2-a6-cmds]{lab2/commands6.png}{Commands run and their output.}
+\screenshot[fig:lab2-a6-flag]{lab2/flag6.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{225b374948b8b7d71c2873e79b22cddb}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 7: Detecting a Copied Binary}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab2-a7-cmds]{lab2/commands7.png}{Commands run and their output.}
+\screenshot[fig:lab2-a7-flag]{lab2/flag7.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{93388fc1}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 8: Detecting Moved Binaries}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab2-a8-cmds]{lab2/commands8.png}{Commands run and their output.}
+\screenshot[fig:lab2-a8-flag]{lab2/flag8.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{kinkajousheeniestbritishreconfigurationhilum}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 9: Detecting a Copied File in /etc/}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab2-a9-cmds]{lab2/commands9.png}{Commands run and their output.}
+\screenshot[fig:lab2-a9-flag]{lab2/flag9.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{ratcliffnoticeablyinturbidatesglottologypteranodon}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 10: Package Verification of a Replaced Binary}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab2-a10-cmds]{lab2/commands10.png}{Commands run and their output.}
+\screenshot[fig:lab2-a10-flag]{lab2/flag10.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{31nA83n8gcr1DcDGod2CRw}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 11: Detecting a Replaced Binary (Method of Choice)}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab2-a11-cmds]{lab2/commands11.png}{Commands run and their output.}
+\screenshot[fig:lab2-a11-flag]{lab2/flag11.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{88c7f7c17dfc3a8032172cd496dbf850}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Log Book Questions}
+
+\labquestion{Why does shasum fail to check the integrity of the shadow file?}
+
+The usual default file permissions for the shadow file are 640 or 600, this means a normal user cannot access the file. Running the command with sudo fixes this and does check the hash of the file. 
+
+\labquestion{Are the files reported as unmodified, or have they changed? Why might they be different to when I wrote the script?}
+
+The files report as changed, because the hashes are hard-coded into the script any changes made to the system will have an affect on these hashes as it would lead changes to them making them no longer match.
+
+\labquestion{What are the limitations of this approach? What files will (and won't) this approach to integrity management cover? Are the hashes protected against tampering?}
+
+Any file that has been installed manually, created by an attacker, or your own personal files as debsums has no hashes to compare them to limiting the usefulness of it. If the attacker has root access then they can update the file storing the hashes after uploading malware to make sure that the malicious file passes the check. 
+
+% =====================================================================
+%  LAB 3
+% =====================================================================
+\clearpage
+\section{Lab 3: Backups and Disaster Recovery: SCP, Deltas, and Rsync}
+
+\subsection{Overview and Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 1: SCP Backup of /usr/bin}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab3-a1-cmds]{lab3/commands1.png}{Commands run and their output.}
+\screenshot[fig:lab3-a1-flag]{lab3/flag1.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{0fbb2f778591c4fed3edf31924ea9447}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 2: Full (Epoch) Rsync Backup of the Second User's Home Directory}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab3-a2-cmds]{lab3/commands2.png}{Commands run and their output.}
+\screenshot[fig:lab3-a2-flag]{lab3/flag2.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{bda99d35}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 3: Second User Changes Their Files (Preparation)}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab3-a3-cmds]{lab3/commands3.png}{Commands run and their output.}
+\screenshot[fig:lab3-a3-flag]{labclearcd 3/flag3.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{cc25c5f0}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 4: Differential Backup 1}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab3-a4-cmds]{lab3/commands4.png}{Commands run and their output.}
+\screenshot[fig:lab3-a4-flag]{lab3/flag4.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{babylonishpotheadinsecurityschnozzesposturists}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 5: Second User Makes More Changes}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab3-a5-cmds]{lab3/commands5.png}{Commands run and their output.}
+\screenshot[fig:lab3-a5-flag]{lab3/flag5.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{deadbolt roosting}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 6: Differential Backup 2}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab3-a6-cmds]{lab3/commands6.png}{Commands run and their output.}
+\screenshot[fig:lab3-a6-flag]{lab3/flag6.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{118128bd}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 7: Second User Makes Even More Changes}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab3-a7-cmds]{lab3/commands7.png}{Commands run and their output.}
+\screenshot[fig:lab3-a7-flag]{lab3/flag7.png}{Flag provided by Hackerbot.}
+\flagvalue{flag{ea999b2ed26191d87d591a643d54a56a}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 8: Incremental Backup 1}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab3-a8-cmds]{lab3/commands8.png}{Commands run and their output.}
+\screenshot[fig:lab3-a8-flag]{lab3/flag8.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 9: Second User Makes One More Set of Changes}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab3-a9-cmds]{lab3/commands9.png}{Commands run and their output.}
+\screenshot[fig:lab3-a9-flag]{lab3/flag9.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 10: Incremental Backup 2 and Backup Quiz}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab3-a10-cmds]{lab3/commands10.png}{Commands run and their output.}
+\screenshot[fig:lab3-a10-flag]{lab3/flag10.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 11: Backup Verification and Attack}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab3-a11-cmds]{lab3/commands11.png}{Commands run and their output.}
+\screenshot[fig:lab3-a11-flag]{lab3/flag11.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 12: Restoring the Second User's Files from Backups}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab3-a12-cmds]{lab3/commands12.png}{Commands run and their output.}
+\screenshot[fig:lab3-a12-flag]{lab3/flag12.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Flag 13: Restoring the First Version of a Single File}
+
+\subsubsection{Evidence}
+\screenshot[fig:lab3-a13-cmds]{lab3/commands13.png}{Commands run and their output.}
+\screenshot[fig:lab3-a13-flag]{lab3/flag13.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+%---------------------------------------------------------------
+\subsection{Log Book Questions}
+
+\labquestion{List a few legitimate security reasons for performing off-line maintenance.}
+Answer.
+
+\labquestion{Compare the file access/modification times of the scp and rsync backups. Are they the same/similar? If not, why?}
+Answer.
+
+% =====================================================================
+%  LAB 4
+% =====================================================================
+\clearpage
+\section{Lab 4: IDS, IPS, and Network Monitoring using Snort}
+
+\subsection{Overview and Theory}
+\ldots
+
+\subsection{Flag 1: Title}
+
+\subsubsection{Evidence}
+\screenshot{lab4_flag1_commands.png}{Commands run and their output.}
+\screenshot{lab4_flag1_flag.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+\subsection{Log Book Questions}
+\labquestion{Question text.}
+Answer.
+
+% =====================================================================
+%  LAB 7
+% =====================================================================
+\clearpage
+\section{Lab 7: IDS: Writing Snort Rules}
+
+\subsection{Overview and Theory}
+\ldots
+
+\subsection{Flag 1: Title}
+
+\subsubsection{Evidence}
+\screenshot{lab7_flag1_commands.png}{Commands run and their output.}
+\screenshot{lab7_flag1_flag.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+\subsection{Log Book Questions}
+\labquestion{Question text.}
+Answer.
+
+% =====================================================================
+%  LAB 8
+% =====================================================================
+\clearpage
+\section{Lab 8: Exfiltration Detection}
+
+\subsection{Overview and Theory}
+\ldots
+
+\subsection{Flag 1: Title}
+
+\subsubsection{Evidence}
+\screenshot{lab8_flag1_commands.png}{Commands run and their output.}
+\screenshot{lab8_flag1_flag.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+\subsection{Log Book Questions}
+\labquestion{Question text.}
+Answer.
+
+% =====================================================================
+%  LAB 9
+% =====================================================================
+\clearpage
+\section{Lab 9: Live Analysis}
+
+\subsection{Overview and Theory}
+\ldots
+
+\subsection{Flag 1: Title}
+
+\subsubsection{Evidence}
+\screenshot{lab9_flag1_commands.png}{Commands run and their output.}
+\screenshot{lab9_flag1_flag.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+\subsection{Log Book Questions}
+\labquestion{Question text.}
+Answer.
+
+% =====================================================================
+%  LAB 10
+% =====================================================================
+\clearpage
+\section{Lab 10: Offline Analysis}
+
+\subsection{Overview and Theory}
+\ldots
+
+\subsection{Flag 1: Title}
+
+\subsubsection{Evidence}
+\screenshot{lab10_flag1_commands.png}{Commands run and their output.}
+\screenshot{lab10_flag1_flag.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+\subsection{Log Book Questions}
+\labquestion{Question text.}
+Answer.
+
+% =====================================================================
+%  LAB 11
+% =====================================================================
+\clearpage
+\section{Lab 11: Security Information and Event Management (SIEM)}
+
+\subsection{Overview and Theory}
+\ldots
+
+\subsection{Flag 1: Title}
+
+\subsubsection{Evidence}
+\screenshot{lab11_flag1_commands.png}{Commands run and their output.}
+\screenshot{lab11_flag1_flag.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+\subsection{Log Book Questions}
+\labquestion{Question text.}
+Answer.
+
+% =====================================================================
+%  LAB 12
+% =====================================================================
+\clearpage
+\section{Lab 12: Security Informed Safety}
+
+\subsection{Overview and Theory}
+\ldots
+
+\subsection{Flag 1: Title}
+
+\subsubsection{Evidence}
+\screenshot{lab12_flag1_commands.png}{Commands run and their output.}
+\screenshot{lab12_flag1_flag.png}{Flag provided by Hackerbot.}
+\flagvalue{FLAG{replace_me}}
+
+\subsubsection{Technical Steps}
+\ldots
+
+\subsubsection{Challenge-Specific Theory}
+\ldots
+
+\subsection{Log Book Questions}
+\labquestion{Question text.}
+Answer.
+
+% =====================================================================
+%  REFERENCES -- Leeds Beckett Harvard (Cite Them Right), via biblatex
+%  (authoryear style, adjusted in the preamble)
+%
+%  Add entries to references/references.bib, then cite with:
+%    \parencite{key}          -> (Author, Year)
+%    \parencite[p.~5]{key}    -> (Author, Year, p. 5)
+%    \textcite{key}           -> Author (Year)
+%  Direct quotes: single quotation marks plus a page number.
+% =====================================================================
+\clearpage
+\section*{References}
+\addcontentsline{toc}{section}{References}
+\printbibliography[heading=none]
+
+% =====================================================================
+%  USE OF AI TOOLS  (not counted toward the word limit)
+% =====================================================================
+\clearpage
+\section*{Use of AI Tools}
+\addcontentsline{toc}{section}{Use of AI Tools}
+List each AI tool you used (e.g.\ Grammarly, ChatGPT, Claude) and give a clear account of what it contributed and which parts of the Log Book it helped with. If you used none, state that here.
+
+\end{document}
